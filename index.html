@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube &amp; TikTok Data</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .section {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    input, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    input  { width: 70%; }
+    button { cursor: pointer; }
+    pre {
+      background: #f4f4f4;
+      padding: 1rem;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>YouTube &amp; TikTok API Demo</h1>
+
+  <!-- ── YouTube Section ── -->
+  <div class="section">
+    <h2>Search YouTube</h2>
+    <input type="text" id="youtubeQuery"
+           placeholder="e.g. javascript tutorial" />
+    <button onclick="searchYouTube()">Search</button>
+    <div id="youtubeResults"></div>
+  </div>
+
+  <!-- ── TikTok Section ── -->
+  <div class="section">
+    <h2>TikTok Product Detail</h2>
+    <input type="text" id="tiktokProductId"
+           placeholder="Product ID: 1729582706063344816" />
+    <button onclick="getTikTokProduct()">Fetch Product</button>
+    <pre id="tiktokResult"></pre>
+  </div>
+
+  <script>
+    async function searchYouTube() {
+      const query = document.getElementById('youtubeQuery').value;
+      const res  = await fetch(
+        '/api/youtube?query=' + encodeURIComponent(query)
+      );
+      const data = await res.json();
+      const box  = document.getElementById('youtubeResults');
+
+      if (data.items) {
+        box.innerHTML = data.items
+          .map(
+            item =>
+              '<p><strong>' +
+              item.snippet.title +
+              '</strong><br>' +
+              item.snippet.description +
+              '</p>'
+          )
+          .join('');
+      } else {
+        box.innerText = JSON.stringify(data, null, 2);
+      }
+    }
+
+    async function getTikTokProduct() {
+      const productId = document.getElementById('tiktokProductId').value;
+      const res  = await fetch(
+        '/api/tiktok/product?product_id=' + encodeURIComponent(productId)
+      );
+      const data = await res.json();
+      document.getElementById('tiktokResult').innerText =
+        JSON.stringify(data, null, 2);
+    }
+  </script>
+
+</body>
+  </html>
